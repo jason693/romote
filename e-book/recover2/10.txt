@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include<string.h>
+#include "list.h"
+
+int read_data(List *student_list)
+{
+	FILE *fp = fopen("./data.txt","r+");
+	if(fp == NULL)
+	{
+		perror("fopen error");
+		return -1;
+	}//以只读的方式打开文件
+	while(1)
+	{
+		char buf[1024]={0};
+		char *ret = fgets(buf,1024,fp);
+		if(ret == NULL)
+			break;//检查返回值 来确定它有没有获取完
+		//temp1: 申请空间
+		Node *r = (Node*)malloc(sizeof(Node));
+		if(r==NULL)
+		{
+			perror("malloc error");
+			return -1;
+		}
+		//temp2:往空间写入内容
+		puts(buf);//输出打印到屏幕 做测试的 判断我们是不是读取正确的一行
+		sscanf(buf,"num=%d,name=%s ,ID=%s ,grade=%d,profession=%s ,class=%d,chengji=%d,%d,%d\n",
+				&r->student.num,r->student.name,r->student.ID,&r->student.grade,
+				r->student.profession,&r->student.class,&r->student.chengji.math,&r->student.chengji.english,
+				&r->student.chengji.language);
+		//temp3:添加到链表(头插法 尾插法和顺序插法)
+		if(student_list->first == NULL) //链表为空 既是头也是尾巴
+		{
+			student_list->first = student_list->last = r;
+			student_list->nums++;
+		}
+		else //不为空 尾插 或者头插 顺序插入
+		{
+			//尾插 
+			student_list->last->next = r;
+			student_list->last = r;
+			student_list->nums++;
+		}
+	}
+	fclose(fp);//关闭文件
+	return 0;
+}
+int write_data(List *list)
+{
+	
+	FILE *fp = fopen("./data.txt","w+"); 
+		//如果文件不存在则创建 
+		//如果存在清空并打开
+	Node *r = list->first;
+	while(r) //遍历链表 
+	{
+		char buf[1024]={0};
+		
+		sprintf(buf,"num=%d,name=%s ,ID=%s ,grade=%d,profession=%s ,class=%d\n math=%d,english=%d,language=%d\n",
+				r->student.num,r->student.name,r->student.ID,r->student.grade,
+				r->student.profession,r->student.class,r->student.chengji.math,r->student.chengji.english,
+				r->student.chengji.language);
+		
+		int ret =fputs(buf,fp);
+		//保存每一个节点的信息
+		if(ret<0)
+		{
+			perror("fputs error");
+			return -1;
+		}
+		r = r->next;
+	}
+	fclose(fp);
+	return 0;
+
+}
+

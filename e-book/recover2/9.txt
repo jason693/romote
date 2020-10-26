@@ -1,0 +1,332 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "list.h"
+
+/*
+	函数功能：创建一个链表 
+	参数：无
+	返回值：成功返回头结点的地址 
+			失败返回NULL
+*/
+
+List *create_list(void)
+{
+	//第一步：申请存储头结点的空间 
+	List *list = (List*)malloc(sizeof(List));
+	if(list == NULL)
+	{
+		perror("malloc List error");
+		return NULL;
+	}
+	//第二步：初始化头结点的信息 
+	list->first = list->last = NULL;
+	list->nums = 0;
+	//第三步：返回节点 
+	return list;
+}
+
+/*
+	函数功能：添加学生信息
+*/
+int add_node_tolist(List* student_list)
+{
+	//第一步：申请空间 存储数据节点 
+	Node *p = (Node*)malloc(sizeof(Node));
+	if(p==NULL)
+	{
+		perror("malloc Node error");
+		return -1;
+	}
+	//第二步：对这个数据节点的内容进行赋值 
+	//即对每一项赋值：即填表 
+	printf("请输入学号：");
+	scanf("%d",&p->student.num);
+	getchar();
+	
+	printf("请输入姓名:");
+	scanf("%s",p->student.name);
+	getchar();
+	
+	printf("请输入身份证号:");
+	scanf("%s",p->student.ID);
+	getchar();
+	
+	printf("请输入年级:");
+	scanf("%d",&p->student.grade);
+	getchar();
+	
+	printf("请输入专业：");
+	scanf("%s",p->student.profession);
+	getchar();
+	
+	printf("请输入班级：");
+	scanf("%d",&p->student.class);
+	getchar();
+	
+	printf("请输入学生成绩:");
+	scanf("%d,%d,%d",&p->student.chengji.math,&p->student.chengji.english,&p->student.chengji.language);
+	getchar();
+	
+	//以上对于链表数据节点的每个成员进行了初始化 
+	
+	//第三步：插入链表
+	if(student_list->first == NULL) //链表为空 既是头也是尾巴
+	{
+		student_list->first = student_list->last = p;
+		student_list->nums++;
+	}
+	else //不为空 尾插 或者头插 顺序插入
+	{
+		//尾插 
+		student_list->last->next = p;
+		student_list->last = p;
+		student_list->nums++;
+	}
+	return 0;
+}
+//每次输入的时候都会有有一个回车作为结束符
+//那么输入之后请将回车读取掉
+
+/*
+	函数功能：按学号查找学生信息
+	找到了输出学号并返回节点地址
+	不存在则返回NULL
+*/
+Node *find_student_of_num(List* student_list)
+{
+	//第一步：输入要查找学生学号
+	int No;
+	printf("请输入需要查找学生学号:");
+	scanf("%d",&No);
+	//第二步：遍历链表并判断
+	Node *r = student_list->first;
+	while(r)
+	{
+		if(r->student.num == No) //找到了
+		{
+			printf("find it! he(she) is:%d\n",No);
+			printf("该学生成绩为：\n");
+			printf("数学：%d\n",r->student.chengji.math);
+			printf("英语：%d\n",r->student.chengji.english);
+			printf("语文：%d\n",r->student.chengji.language);
+			return r;
+			
+		}
+		else 
+		{
+			r = r->next;
+		}
+	}
+	return NULL;
+}
+
+/*
+	函数功能：按照姓名查找学生信息
+*/
+Node *find_student_of_name(List* student_list)
+{
+	//第一步：输入要查找学生的名字
+	char name[128];
+	printf("请输入需要查找的学生的名字:");
+	scanf("%s",name);
+	//第二步：遍历链表并判断
+	Node *r = student_list->first;
+	while(r)
+	{
+		if(strcmp(r->student.name,name)==0) //找到了
+		{
+			printf("find it! he(she) is:%s\n",r->student.name);
+			printf("该学生成绩为：\n");
+			printf("数学：%d\n",r->student.chengji.math);
+			printf("英语：%d\n",r->student.chengji.english);
+			printf("语文：%d\n",r->student.chengji.language);
+			return r;
+		}
+		else 
+		{
+			r = r->next;
+		}
+	}
+	return NULL;
+}
+/*
+	函数功能：按照身份证号查找学生信息 
+	存在返回节点地址
+	不存在返回空
+*/
+Node *find_student_of_ID(List* student_list)
+{
+	//第一步：输入要查找学生的身份证号
+	char memb[128];
+	printf("请输入需要查找的学生身份证号:");
+	scanf("%s",memb);
+	//第二步：遍历链表并判断
+	Node *r = student_list->first;
+	while(r)
+	{
+		if(strcmp(r->student.ID,memb)==0) //找到了
+		{
+			printf("find it! he(she) is:%s\n",r->student.ID);
+			printf("该学生成绩为：\n");
+			printf("数学：%d\n",r->student.chengji.math);
+			printf("英语：%d\n",r->student.chengji.english);
+			printf("语文：%d\n",r->student.chengji.language);
+			return r;
+		}
+		else 
+		{
+			r = r->next;
+		}
+	}
+	return NULL;
+}
+/*
+	函数功能：查找（三种方式）
+*/
+
+Node *find_student_(List* student_list)
+{
+	Node *r = student_list->first;
+	int n;
+	printf("请输入你要查找的方式：1.按学号查找 2.按名字查找 3.按身份证号查找\n");
+	scanf("%d",&n);
+	if(n==1)
+		r = find_student_of_num(student_list);
+	else if(n==2)
+		r = find_student_of_name(student_list);
+	else if(n==3)
+		r = find_student_of_ID(student_list);//调用查找方式
+	//循环结束后则有两种情况
+	
+	if(r==NULL)//表示找完了这个链表都没有找到要删除的节点
+	{
+		printf("没有所要找的学生\n");
+		return NULL;
+	}
+	else if(r!=NULL)//r就是我们要找的 
+	{
+		printf("该学生找到了！\n");
+			return r;
+	}
+}
+
+//删除 
+/*
+	函数功能：删除学生信息 
+	返回值：成功返回0 
+			失败返回-1
+*/
+int del_node_tolist(List* student_list)
+{
+	Node *r = student_list->first;
+	Node *pre = NULL;
+	int n;
+	printf("请输入你要查找的方式：1.按学号查找 2.按名字查找 3.按身份证号查找\n");
+	scanf("%d",&n);
+	if(n==1)
+		r = find_student_of_num(student_list);
+	else if(n==2)
+		r = find_student_of_name(student_list);
+	else if(n==3)
+		r = find_student_of_ID(student_list);//调用查找方式
+	//循环结束后则有两种情况
+	
+	if(r==NULL)//表示找完了这个链表都没有找到要删除的节点
+	{
+		printf("没有所要找的学生\n");
+		return -1;
+	}
+	else if(r!=NULL)//r就是我们要删除的节点  
+	{
+		pre = r;
+		//对于 r而言 有三种情况 即 头 尾 中间 
+		if(r==student_list->first)
+		{
+			if(r==student_list->last)
+				student_list->last = NULL; //即可 删除最后一个 
+			student_list->first = r->next;
+		}
+		else 
+		{
+			if(r == student_list->last)
+				student_list->last = pre;
+			pre->next = r->next;
+			
+		}
+		r->next = NULL;
+		free(r);
+		r = NULL;
+		student_list->nums--;
+	
+	}
+	return 0;
+}
+//修改  
+/*
+	函数功能：修改学生信息 
+	方法：修改书籍而言 即将链表中值为num的数据修改为 var 
+			先查找到需要修改的节点(按什么方式查) 
+			然后进行修改
+	参数：有三个
+		List *book_list;要修改的链表 //表示那个图书链表
+		num 等待修改的值
+		var 修改之后的值
+		
+	返回值：成功返回0 
+			失败返回-1
+*/
+int change_node_tolist(List* student_list)
+{
+	Node* r = student_list->first;
+	int n;
+	printf("请输入你要修改的方式：1.按学号修改 2.按姓名修改 3.按身份证号修改\n");
+	scanf("%d",&n);
+	if(n==1)//按学号修改
+	{
+		r = find_student_of_num(student_list);
+		if(r==NULL)//表示找完了这个链表都没有找到要修改的节点
+		{
+			printf("没有所要找的学生\n");
+			return -1;
+		}
+		else if(r!=NULL)//r就是我们要修改的节点
+		{
+			printf("请输入修改值：");
+			scanf("%d,%d,%d",&r->student.chengji.math,&r->student.chengji.english,&r->student.chengji.language);
+			return 0;
+		}
+	}
+	else if(n==2)//按姓名修改
+	{
+		r = find_student_of_name(student_list);
+		if(r==NULL)//表示找完了这个链表都没有找到要修改的节点
+		{
+			printf("没有所要找的学生\n");
+			return -1;
+		}
+		else if(r!=NULL)//r就是我们要修改的节点
+		{
+			printf("请输入修改值：\n");
+			scanf("%d/%d/%d",&r->student.chengji.math,&r->student.chengji.english,&r->student.chengji.language);
+			return 0;
+		}
+	}	
+	else if(n==3)//按身份证号修改
+	{
+		r = find_student_of_ID(student_list);//调用查找方式
+		if(r==NULL)//表示找完了这个链表都没有找到要修改的节点
+		{
+			printf("没有所要找的学生\n");
+			return -1;
+		}
+		else if(r!=NULL)//r就是我们要修改的节点
+		{
+		
+			printf("请输入修改值：\n");
+			scanf("%d/%d/%d",&r->student.chengji.math,&r->student.chengji.english,&r->student.chengji.language);
+			return 0;
+		}
+	}
+}
+
